@@ -110,7 +110,10 @@ public class MainActivity extends AppCompatActivity {
                             //PASS THROUGH THE ARRAYLIST PLAYLIST VARAIBLE HERE
 
                             Log.d("user", Integer.toString(userPlaylists.size()));
-                            setContentView(R.layout.playlist_layout);
+
+                            // for tracklist RecyclerView, call correspodning init method
+                            setContentView(R.layout.tracklist_layout);
+
                             initImageBitmaps(userPlaylists, playlistSongs);
 
                         }
@@ -219,12 +222,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        initRecyclerView();
+        initTrackRecyclerView();
     }
 
     private void initRecyclerView() {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(mPlaylistName, mNames, mImageUrls, this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void initTrackRecyclerView() {
+        RecyclerView recyclerView = findViewById(R.id.track_list);
+        TrackRecyclerViewAdapter adapter = new TrackRecyclerViewAdapter(mNames, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

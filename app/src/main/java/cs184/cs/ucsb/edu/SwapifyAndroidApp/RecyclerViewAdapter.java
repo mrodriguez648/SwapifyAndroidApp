@@ -53,10 +53,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.playlistName.setText(mPlaylistName.get(position));
 
-        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+        holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
             }
         });
     }
@@ -68,12 +67,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        View mView;
         CircleImageView image;
         TextView playlistDesc;
         TextView playlistName;
         RelativeLayout parentLayout;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            mView = itemView;
             image = itemView.findViewById(R.id.image);
             playlistName = itemView.findViewById(R.id.PlaylistName);
             playlistDesc = itemView.findViewById(R.id.PlaylistDesc);
