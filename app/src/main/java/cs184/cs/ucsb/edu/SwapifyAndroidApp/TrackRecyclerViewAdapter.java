@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -24,6 +24,31 @@ public class TrackRecyclerViewAdapter extends RecyclerView.Adapter<TrackRecycler
 //    private final ArrayList<PlaylistTrack> mTracks;
     private ArrayList<String> mImages;
     private Context mContext;
+
+    public class TrackViewHolder extends RecyclerView.ViewHolder {
+        public View mView;
+        public ImageView mAlbumImgView;
+        public TextView mTrackTitleView;
+        public TextView mArtistView;
+        public TextView mAlbumNameView;
+        // Track needed for real implementation for onclick viewmodel logic
+        // public PlaylistTrack mTrack;
+
+        public TrackViewHolder(View view) {
+            super(view);
+            mView = view;
+            mAlbumImgView = (ImageView) view.findViewById(R.id.track_album);
+            mTrackTitleView = (TextView) view.findViewById(R.id.track_title);
+            mArtistView = (TextView) view.findViewById(R.id.track_artist);
+            mAlbumNameView = (TextView) view.findViewById(R.id.track_albumname);
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return super.toString() + " '" + mTrackTitleView.getText() + "'";
+        }
+    }
 
     public TrackRecyclerViewAdapter(ArrayList<String> Images, Context context) {
         dummyData = new ArrayList<>();
@@ -87,10 +112,9 @@ public class TrackRecyclerViewAdapter extends RecyclerView.Adapter<TrackRecycler
         DummyTrack cTrack = dummyData.get(position);
         holder.mAlbumNameView.setText(cTrack.dAlbumName);
         holder.mArtistView.setText(cTrack.dArtistName);
-
-        Glide.with(mContext)
-                .asBitmap()
-                .load(mImages.get(position))
+        Picasso.get()
+                .load(cTrack.dAlbumImgURL)
+                .resize(80,80)
                 .into(holder.mAlbumImgView);
 
         holder.mTrackTitleView.setText(cTrack.dTrackTitle);
@@ -132,30 +156,5 @@ public class TrackRecyclerViewAdapter extends RecyclerView.Adapter<TrackRecycler
     @Override
     public int getItemCount() {
         return dummyData.size();
-    }
-
-    public class TrackViewHolder extends RecyclerView.ViewHolder {
-        public View mView;
-        public ImageView mAlbumImgView;
-        public TextView mTrackTitleView;
-        public TextView mArtistView;
-        public TextView mAlbumNameView;
-        // Track needed for real implementation for onclick viewmodel logic
-        // public PlaylistTrack mTrack;
-
-        public TrackViewHolder(View view) {
-            super(view);
-            mView = view;
-            mAlbumImgView = (ImageView) view.findViewById(R.id.track_album);
-            mTrackTitleView = (TextView) view.findViewById(R.id.track_title);
-            mArtistView = (TextView) view.findViewById(R.id.track_artist);
-            mAlbumNameView = (TextView) view.findViewById(R.id.track_albumname);
-        }
-
-        @NonNull
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mTrackTitleView.getText() + "'";
-        }
     }
 }
