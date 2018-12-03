@@ -2,9 +2,10 @@
 <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/track_list"
-    android:name="cs184.cs.ucsb.edu.swapify.SongFragment"
+    android:id="@+id/list"
+    android:name="cs184.cs.ucsb.edu.swapify.PlaylistFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-    tools:listitem="@layout/tracklist_item" />
+    tools:context=".PlaylistFragment"
+    tools:listitem="@layout/fragment_playlist_item" />
