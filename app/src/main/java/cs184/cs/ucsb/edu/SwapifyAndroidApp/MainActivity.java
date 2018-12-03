@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements
                                     .add(R.id.fragment_container, welcomeFrag)
                                     .commit();
                         }
+
                         @Override
                         public void failure(RetrofitError error) {
                         }
@@ -137,6 +138,36 @@ public class MainActivity extends AppCompatActivity implements
                         .replace(R.id.fragment_container, tracksFrag)
                         .addToBackStack(null)
                         .commit();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+    }
+}
+
+
+
+
+
+
+/*
+    public  static Track swapifySong(final Track original){
+        String albumId = original.album.id;
+        //check if album has another song available
+        final ArrayList<Track> result = new ArrayList<>();
+        spotify.getAlbumTracks(albumId, new Callback<Pager<Track>>() {
+            @Override
+            public void success(Pager<Track> trackPager, Response response) {
+                List<Track> tracks = trackPager.items;
+                for(Track track : tracks){
+                    if(track.id != original.id){
+                        result.add(track);                   }
+                }
+
+>>>>>>> Stashed changes
             }
 
             @Override
