@@ -19,6 +19,7 @@ import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.UserPrivate;
+
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -27,7 +28,7 @@ import retrofit.client.Response;
 public class MainActivity extends AppCompatActivity implements
         WelcomeFragment.OnWelcomeFragmentInteractionListener,
         PlaylistFragment.OnPlaylistFragmentInteractionListener,
-        TracksFragment.OnTrackFragmentInteractionListener {
+        TracksFragment.OnTracksFragmentInteractionListener {
     private static final int REQUEST_CODE = 1337;
     private static final String CLIENT_ID = "49561555a6fd4897912fddebb7bf7da8";
     private static final String REDIRECT_URI = "testspotify://callback";
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, playlistFrag)
+                .addToBackStack(null)
                 .commit();
     }
 

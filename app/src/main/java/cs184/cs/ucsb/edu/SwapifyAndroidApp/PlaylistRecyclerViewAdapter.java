@@ -74,9 +74,9 @@ public class PlaylistRecyclerViewAdapter extends RecyclerView.Adapter<PlaylistRe
         public PlaylistViewHolder(@NonNull View view) {
             super(view);
             mView = view;
-            albumImgView = view.findViewById(R.id.playlist_img);
+            albumImgView = view.findViewById(R.id.track_album_img);
             playlistAuthorView = view.findViewById(R.id.playlist_author);
-            playlistTitleView = view.findViewById(R.id.playlist_title);
+            playlistTitleView = view.findViewById(R.id.track_title);
         }
     }
 }

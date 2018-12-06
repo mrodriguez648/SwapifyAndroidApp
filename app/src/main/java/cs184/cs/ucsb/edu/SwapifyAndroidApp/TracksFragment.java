@@ -13,21 +13,19 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import kaaes.spotify.webapi.android.models.Playlist;
-import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.Track;
 
 /**
  * A fragment representing a list of Tracks.
- * Activities containing this fragment MUST implement the {@link OnTrackFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnTracksFragmentInteractionListener}
  * interface.
  */
 
 public class TracksFragment extends Fragment {
 
     public static final String PLAYLIST_TAG = "PLAYLIST_TAG";
-    private OnTrackFragmentInteractionListener mListener;
+    private OnTracksFragmentInteractionListener mListener;
     private ArrayList<PlaylistTrack> mTrackList;
 
     /**
@@ -74,11 +72,11 @@ public class TracksFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnTrackFragmentInteractionListener) {
-            mListener = (OnTrackFragmentInteractionListener) context;
+        if (context instanceof OnTracksFragmentInteractionListener) {
+            mListener = (OnTracksFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnTrackFragmentInteractionListener");
+                    + " must implement OnTracksFragmentInteractionListener");
         }
     }
 
@@ -99,7 +97,7 @@ public class TracksFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnTrackFragmentInteractionListener {
+    public interface OnTracksFragmentInteractionListener {
         void swapifySong(final Track original);
     }
 }

@@ -7,7 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 
 /**
@@ -22,7 +25,13 @@ import android.widget.TextView;
 public class WelcomeFragment extends Fragment {
 
     public static final String USERNAME_TAG = "USERNAME_TAG";
+    private ImageView mSpotifyIcon;
+    private TextView mWelcomeView;
+    private TextView mUsernameView;
+    private TextView mWelcomeDescView;
+    private Button mSwapify;
     private String username;
+    private int textViewAnimeTime;
     private OnWelcomeFragmentInteractionListener mListener;
 
     public WelcomeFragment() {
@@ -49,13 +58,27 @@ public class WelcomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_welcome, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_welcome_test, container, false);
 
-        TextView usernameView = rootView.findViewById(R.id.username);
-        usernameView.setText(username);
+        mSpotifyIcon = (ImageView) rootView.findViewById(R.id.imgv_spotify);
+        mWelcomeView = (TextView) rootView.findViewById(R.id.welcome_txt);
+        mWelcomeDescView = (TextView) rootView.findViewById(R.id.welcome_desc);
+        mUsernameView = (TextView) rootView.findViewById(R.id.username);
+        mSwapify = (Button) rootView.findViewById(R.id.b_swapify);
+        mSpotifyIcon.setVisibility(View.GONE);
+        mWelcomeView.setVisibility(View.GONE);
+        mWelcomeDescView.setVisibility(View.GONE);
+        mUsernameView.setVisibility(View.GONE);
+        mSwapify.setVisibility(View.GONE);
+        mUsernameView.setText(username);
+        textViewAnimeTime = getResources().getInteger(android.R.integer.config_longAnimTime);
+        fadeViewIn(mSpotifyIcon);
+        fadeViewIn(mWelcomeView);
+        fadeViewIn(mUsernameView);
+        fadeViewIn(mWelcomeDescView);
+        fadeViewIn(mSwapify);
 
-        Button bSwapify = rootView.findViewById(R.id.b_swapify);
-        bSwapify.setOnClickListener(new View.OnClickListener() {
+        mSwapify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.initPlaylistFragment();
@@ -79,6 +102,15 @@ public class WelcomeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private void fadeViewIn(View v) {
+        v.setAlpha(0f);
+        v.setVisibility(View.VISIBLE);
+        v.animate()
+                .alpha(1f)
+                .setDuration(textViewAnimeTime)
+                .setListener(null);
     }
 
     /**

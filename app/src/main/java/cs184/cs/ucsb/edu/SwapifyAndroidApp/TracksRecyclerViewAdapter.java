@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import cs184.cs.ucsb.edu.SwapifyAndroidApp.TracksFragment.OnTrackFragmentInteractionListener;
+import cs184.cs.ucsb.edu.SwapifyAndroidApp.TracksFragment.OnTracksFragmentInteractionListener;
 
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.Track;
@@ -25,9 +25,9 @@ import java.util.ArrayList;
 public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecyclerViewAdapter.TrackViewHolder> {
 
     private final ArrayList<PlaylistTrack> mTracks;
-    private final OnTrackFragmentInteractionListener mListener;
+    private final OnTracksFragmentInteractionListener mListener;
 
-    public TracksRecyclerViewAdapter(ArrayList<PlaylistTrack> items, OnTrackFragmentInteractionListener listener) {
+    public TracksRecyclerViewAdapter(ArrayList<PlaylistTrack> items, TracksFragment.OnTracksFragmentInteractionListener listener) {
         mTracks = items;
         mListener = listener;
     }
@@ -38,6 +38,9 @@ public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecycl
         Log.d("methodCall", "onCreateViewHolder called, viewType: " + Integer.toString(viewType));
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_track_item, parent, false);
+        view.findViewById(R.id.track_title).setSelected(true);
+        view.findViewById(R.id.track_artist).setSelected(true);
+        view.findViewById(R.id.track_albumname).setSelected(true);
         return new TrackViewHolder(view);
     }
 
@@ -91,8 +94,8 @@ public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecycl
         public TrackViewHolder(View view) {
             super(view);
             mView = view;
-            mAlbumImgView = (ImageView) view.findViewById(R.id.playlist_img);
-            mTrackTitleView = (TextView) view.findViewById(R.id.playlist_title);
+            mAlbumImgView = (ImageView) view.findViewById(R.id.track_album_img);
+            mTrackTitleView = (TextView) view.findViewById(R.id.track_title);
             mArtistView = (TextView) view.findViewById(R.id.track_artist);
             mAlbumNameView = (TextView) view.findViewById(R.id.track_albumname);
         }

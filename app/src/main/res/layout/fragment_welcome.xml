@@ -8,12 +8,12 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/Welcome"
+        android:id="@+id/welcome_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="@string/WelcomeText"
+        android:text="@string/welcome_txt"
         android:textAllCaps="true"
         android:textColor="@android:color/black"
         android:textSize="18sp"
@@ -34,16 +34,16 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Welcome" />
+        app:layout_constraintTop_toBottomOf="@+id/welcome_txt" />
 
     <TextView
-        android:id="@+id/WelcomeDesc"
+        android:id="@+id/welcome_desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingLeft="50dp"
         android:paddingRight="50dp"
-        android:text="@string/WelcomeDescription"
+        android:text="@string/welcome_desc"
         android:textSize="24sp"
         android:textStyle="italic"
         app:layout_constraintBottom_toTopOf="@+id/b_swapify"
@@ -52,7 +52,7 @@
         app:layout_constraintLeft_toRightOf="parent"
         app:layout_constraintRight_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Welcome"
+        app:layout_constraintTop_toBottomOf="@+id/welcome_txt"
         app:layout_constraintVertical_bias="0.498" />
 
     <Button
