@@ -10,8 +10,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,7 +56,7 @@ public class WelcomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_welcome_test, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_welcome, container, false);
 
         mSpotifyIcon = (ImageView) rootView.findViewById(R.id.imgv_spotify);
         mWelcomeView = (TextView) rootView.findViewById(R.id.welcome_txt);
