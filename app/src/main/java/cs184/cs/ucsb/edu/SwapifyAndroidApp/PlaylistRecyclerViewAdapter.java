@@ -37,6 +37,8 @@ public class PlaylistRecyclerViewAdapter extends RecyclerView.Adapter<PlaylistRe
     @Override
     public PlaylistViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_playlist_item, parent, false);
+        view.findViewById(R.id.playlist_title).setSelected(true);
+        view.findViewById(R.id.playlist_author).setSelected(true);
         return new PlaylistViewHolder(view);
     }
 
@@ -74,9 +76,9 @@ public class PlaylistRecyclerViewAdapter extends RecyclerView.Adapter<PlaylistRe
         public PlaylistViewHolder(@NonNull View view) {
             super(view);
             mView = view;
-            albumImgView = view.findViewById(R.id.track_album_img);
+            albumImgView = view.findViewById(R.id.playlist_album_img);
             playlistAuthorView = view.findViewById(R.id.playlist_author);
-            playlistTitleView = view.findViewById(R.id.track_title);
+            playlistTitleView = view.findViewById(R.id.playlist_title);
         }
     }
 }
