@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements
                             WelcomeFragment welcomeFrag = WelcomeFragment.newInstance(userPrivate.display_name);
                             fragmentManager
                                     .beginTransaction()
-                                    .setCustomAnimations(android.R.anim.slide_out_right,
+                                    .setCustomAnimations(0,
                                             android.R.anim.slide_out_right,
                                             android.R.anim.slide_in_left,
                                             android.R.anim.slide_out_right)

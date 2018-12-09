@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -69,13 +70,15 @@ public class TracksFragment extends Fragment {
             Log.d("recyclerView", "RecyclerView instantiated");
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) rc;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            adapt = new TracksRecyclerViewAdapter(mTrackList,mListener);
-            recyclerView.setAdapter(adapt);
-
+            LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+            recyclerView.setLayoutManager(layoutManager);
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                    layoutManager.getOrientation());
+            recyclerView.addItemDecoration(dividerItemDecoration);
+            recyclerView.setAdapter(new TracksRecyclerViewAdapter(mTrackList,mListener));
         }
 
-        Button swapPlaylistButton = view.findViewById(R.id.swap_button);
+        Button swapPlaylistButton = view.findViewById(R.id.b_swapify);
         swapPlaylistButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,7 +121,4 @@ public class TracksFragment extends Fragment {
      */
     public interface OnTracksFragmentInteractionListener {
     }
-
-
-
 }

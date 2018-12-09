@@ -55,18 +55,17 @@ public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecycl
                 .resize(MainActivity.MAX_ALBUM_DIMENSIONS, MainActivity.MAX_ALBUM_DIMENSIONS)
                 .into(holder.mAlbumImgView);
         holder.mTrackTitleView.setText(cTrack.name);
-        // Logic for create a string of artists for tracks with more than 1
-//        StringBuilder allTrackArtist = new StringBuilder();
-//        allTrackArtist.append(cTrack.artists.get(0).name);
-//
-//        if(cTrack.artists.size() > 1) {
-//            for(int i = 1; i < cTrack.artists.size(); i++) {
-//               allTrackArtist.append(", ");
-//               allTrackArtist.append(cTrack.artists.get(i));
-//            }
-//        }
+        StringBuilder allTrackArtist = new StringBuilder();
+        allTrackArtist.append(cTrack.artists.get(0).name);
 
-        holder.mArtistView.setText(cTrack.artists.get(0).name);
+        if(cTrack.artists.size() > 1) {
+            for(int i = 1; i < cTrack.artists.size(); i++) {
+               allTrackArtist.append(", ");
+               allTrackArtist.append(cTrack.artists.get(i).name);
+            }
+        }
+
+        holder.mArtistView.setText(allTrackArtist.toString());
         holder.mAlbumNameView.setText(cTrack.album.name);
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
