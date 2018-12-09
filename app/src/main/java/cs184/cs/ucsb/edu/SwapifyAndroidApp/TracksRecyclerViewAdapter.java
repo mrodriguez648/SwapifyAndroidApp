@@ -11,9 +11,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
-import cs184.cs.ucsb.edu.SwapifyAndroidApp.TracksFragment.OnTrackFragmentInteractionListener;
+import cs184.cs.ucsb.edu.SwapifyAndroidApp.TracksFragment.OnTracksFragmentInteractionListener;
 
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.Track;

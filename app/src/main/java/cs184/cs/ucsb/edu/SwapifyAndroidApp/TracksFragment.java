@@ -1,6 +1,5 @@
 package cs184.cs.ucsb.edu.SwapifyAndroidApp;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,12 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
-import kaaes.spotify.webapi.android.models.Track;
 
 /**
  * A fragment representing a list of Tracks.
@@ -28,7 +25,7 @@ import kaaes.spotify.webapi.android.models.Track;
 public class TracksFragment extends Fragment {
 
     public static final String PLAYLIST_TAG = "PLAYLIST_TAG";
-    OnTrackFragmentInteractionListener mListener;
+    OnTracksFragmentInteractionListener mListener;
     private ArrayList<PlaylistTrack> mTrackList;
     TracksRecyclerViewAdapter adapt;
     static String  playlistId;
@@ -91,9 +88,6 @@ public class TracksFragment extends Fragment {
         return view;
     }
 
-    public void swapSongs(){
-
-    }
 
 
     @Override
@@ -124,7 +118,7 @@ public class TracksFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnTrackFragmentInteractionListener {
+    public interface OnTracksFragmentInteractionListener {
     }
 
 
