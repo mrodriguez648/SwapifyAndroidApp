@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/playlist_img"
+        android:id="@+id/playlist_album_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -17,31 +17,52 @@
 
     <TextView
         android:id="@+id/playlist_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="playlist_title"
         android:textAppearance="?attr/textAppearanceListItem"
-        app:layout_constraintStart_toEndOf="@+id/playlist_img"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/playlist_album_img"
+        app:layout_constraintTop_toTopOf="parent"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit ="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"
+        />
 
     <TextView
         android:id="@+id/textView_BY"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/PlaylistAuthorBy"
+        android:text="@string/playlist_auth_BY"
         android:textAppearance="?attr/textAppearanceListItem"
-        app:layout_constraintStart_toEndOf="@+id/playlist_img"
-        app:layout_constraintTop_toBottomOf="@+id/playlist_title" />
+        app:layout_constraintStart_toEndOf="@+id/playlist_album_img"
+        app:layout_constraintTop_toBottomOf="@+id/playlist_title"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit ="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"/>
 
     <TextView
         android:id="@+id/playlist_author"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:text="playlist_author"
         android:textAppearance="?attr/textAppearanceListItem"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView_BY"
-        app:layout_constraintTop_toBottomOf="@+id/playlist_title" />
+        app:layout_constraintTop_toBottomOf="@+id/playlist_title"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit ="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"/>
 
 </android.support.constraint.ConstraintLayout>

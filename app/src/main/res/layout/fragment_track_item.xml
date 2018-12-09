@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/track_layout"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/playlist_img"
+        android:id="@+id/track_album_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -16,32 +16,55 @@
         app:srcCompat="@mipmap/ic_launcher_round" />
 
     <TextView
-        android:id="@+id/playlist_title"
-        android:layout_width="wrap_content"
+        android:id="@+id/track_title"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="title"
         android:textAppearance="?attr/textAppearanceListItem"
-        app:layout_constraintStart_toEndOf="@+id/playlist_img"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/track_album_img"
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit ="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true" />
 
     <TextView
         android:id="@+id/track_artist"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="artist"
         android:textAppearance="?attr/textAppearanceListItem"
-        app:layout_constraintStart_toEndOf="@+id/playlist_img"
-        app:layout_constraintTop_toBottomOf="@+id/playlist_title" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/track_album_img"
+        app:layout_constraintTop_toBottomOf="@+id/track_title"
+
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit ="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"
+        />
 
     <TextView
         android:id="@+id/track_albumname"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+
+        android:singleLine="true"
         android:text="albumname"
         android:textAppearance="?attr/textAppearanceListItem"
-        app:layout_constraintStart_toEndOf="@+id/track_artist"
-        app:layout_constraintTop_toTopOf="@+id/track_artist" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/track_album_img"
+        app:layout_constraintTop_toBottomOf="@+id/track_artist" />
 
 </android.support.constraint.ConstraintLayout>

@@ -2,7 +2,8 @@ package cs184.cs.ucsb.edu.SwapifyAndroidApp;
 
 import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +31,7 @@ import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
 import kaaes.spotify.webapi.android.models.UserPrivate;
+
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -41,7 +43,7 @@ import retrofit.client.Response;
 public class MainActivity extends AppCompatActivity implements
         WelcomeFragment.OnWelcomeFragmentInteractionListener,
         PlaylistFragment.OnPlaylistFragmentInteractionListener,
-        TracksFragment.OnTrackFragmentInteractionListener {
+        TracksFragment.OnTracksFragmentInteractionListener {
     private static final int REQUEST_CODE = 1337;
     private static final String CLIENT_ID = "49561555a6fd4897912fddebb7bf7da8";
     private static final String REDIRECT_URI = "testspotify://callback";
@@ -55,12 +57,15 @@ public class MainActivity extends AppCompatActivity implements
     public static  HashMap<String,String> swappedSongs = new HashMap<>();
 
 
+    private FragmentManager fragmentManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         api = new SpotifyApi();
+        fragmentManager = getSupportFragmentManager();
         userPlaylists = new ArrayList<>();
 
         AuthenticationRequest.Builder builder =
@@ -97,8 +102,12 @@ public class MainActivity extends AppCompatActivity implements
                         public void success(UserPrivate userPrivate, Response response) {
                             userid = userPrivate.id;
                             WelcomeFragment welcomeFrag = WelcomeFragment.newInstance(userPrivate.display_name);
-                            getSupportFragmentManager()
+                            fragmentManager
                                     .beginTransaction()
+                                    .setCustomAnimations(android.R.anim.slide_in_left,
+                                            android.R.anim.slide_out_right,
+                                            android.R.anim.slide_in_left,
+                                            android.R.anim.slide_out_right)
                                     .add(R.id.fragment_container, welcomeFrag)
                                     .commit();
                         }
@@ -143,7 +152,12 @@ public class MainActivity extends AppCompatActivity implements
         PlaylistFragment playlistFrag = PlaylistFragment.newInstance();
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(android.R.anim.slide_in_left,
+                        android.R.anim.slide_out_right,
+                        android.R.anim.slide_in_left,
+                        android.R.anim.slide_out_right)
                 .replace(R.id.fragment_container, playlistFrag)
+                .addToBackStack(null)
                 .commit();
     }
 
@@ -158,6 +172,10 @@ public class MainActivity extends AppCompatActivity implements
                 //tracksFrag.setArguments(bundle);
                 getSupportFragmentManager()
                         .beginTransaction()
+                        .setCustomAnimations(android.R.anim.slide_in_left,
+                                android.R.anim.slide_out_right,
+                                android.R.anim.slide_in_left,
+                                android.R.anim.slide_out_right)
                         .replace(R.id.fragment_container, tracksFrag)
                         .addToBackStack(null)
                         .commit();
@@ -166,7 +184,6 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void failure(RetrofitError error) {
-
             }
         });
     }
