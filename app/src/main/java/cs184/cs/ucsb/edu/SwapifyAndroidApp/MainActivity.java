@@ -2,6 +2,8 @@ package cs184.cs.ucsb.edu.SwapifyAndroidApp;
 
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,12 +41,15 @@ public class MainActivity extends AppCompatActivity implements
 
     public static ArrayList<PlaylistSimple> userPlaylists;
 
+    private FragmentManager fragmentManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         api = new SpotifyApi();
+        fragmentManager = getSupportFragmentManager();
         userPlaylists = new ArrayList<>();
 
         AuthenticationRequest.Builder builder =
@@ -78,8 +83,12 @@ public class MainActivity extends AppCompatActivity implements
                         @Override
                         public void success(UserPrivate userPrivate, Response response) {
                             WelcomeFragment welcomeFrag = WelcomeFragment.newInstance(userPrivate.display_name);
-                            getSupportFragmentManager()
+                            fragmentManager
                                     .beginTransaction()
+                                    .setCustomAnimations(android.R.anim.slide_in_left,
+                                            android.R.anim.slide_out_right,
+                                            android.R.anim.slide_in_left,
+                                            android.R.anim.slide_out_right)
                                     .add(R.id.fragment_container, welcomeFrag)
                                     .commit();
                         }
@@ -122,6 +131,10 @@ public class MainActivity extends AppCompatActivity implements
         PlaylistFragment playlistFrag = PlaylistFragment.newInstance();
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(android.R.anim.slide_in_left,
+                        android.R.anim.slide_out_right,
+                        android.R.anim.slide_in_left,
+                        android.R.anim.slide_out_right)
                 .replace(R.id.fragment_container, playlistFrag)
                 .addToBackStack(null)
                 .commit();
@@ -136,6 +149,10 @@ public class MainActivity extends AppCompatActivity implements
                 TracksFragment tracksFrag = TracksFragment.newInstance(playlistTracks);
                 getSupportFragmentManager()
                         .beginTransaction()
+                        .setCustomAnimations(android.R.anim.slide_in_left,
+                                android.R.anim.slide_out_right,
+                                android.R.anim.slide_in_left,
+                                android.R.anim.slide_out_right)
                         .replace(R.id.fragment_container, tracksFrag)
                         .addToBackStack(null)
                         .commit();
@@ -143,7 +160,6 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void failure(RetrofitError error) {
-
             }
         });
     }
