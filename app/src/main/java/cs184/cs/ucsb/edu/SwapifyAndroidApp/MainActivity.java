@@ -7,24 +7,37 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
+import com.bumptech.glide.signature.ObjectKey;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.Pager;
+import kaaes.spotify.webapi.android.models.Playlist;
 import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.Track;
+import kaaes.spotify.webapi.android.models.Tracks;
 import kaaes.spotify.webapi.android.models.UserPrivate;
 
 import retrofit.Callback;
+import retrofit.RequestInterceptor;
+import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -35,11 +48,14 @@ public class MainActivity extends AppCompatActivity implements
     private static final String CLIENT_ID = "49561555a6fd4897912fddebb7bf7da8";
     private static final String REDIRECT_URI = "testspotify://callback";
     public static final int MAX_ALBUM_DIMENSIONS = 200;
-
+    TracksFragment tracksFragment;
     private SpotifyApi api;
     public static SpotifyService spotify;
-
     public static ArrayList<PlaylistSimple> userPlaylists;
+    public static String userid;
+    public static StringBuilder builder = new StringBuilder();
+    public static  HashMap<String,String> swappedSongs = new HashMap<>();
+
 
     private FragmentManager fragmentManager;
 
@@ -55,7 +71,8 @@ public class MainActivity extends AppCompatActivity implements
         AuthenticationRequest.Builder builder =
                 new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
 
-        builder.setScopes(new String[]{"streaming"});
+        builder.setScopes(new String[]{"streaming,playlist-modify-public," +
+                "playlist-read-private,playlist-read-collaborative"});
         AuthenticationRequest request = builder.build();
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
@@ -74,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements
                 case TOKEN:
                     // Handle successful response
                     Log.d("user", "success");
+                    final String accessToken = response.getAccessToken();
                     api.setAccessToken(response.getAccessToken());
                     spotify = api.getService();
                     // Populate our user playlist data
@@ -82,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements
                     spotify.getMe(new Callback<UserPrivate>() {
                         @Override
                         public void success(UserPrivate userPrivate, Response response) {
+                            userid = userPrivate.id;
                             WelcomeFragment welcomeFrag = WelcomeFragment.newInstance(userPrivate.display_name);
                             fragmentManager
                                     .beginTransaction()
@@ -92,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements
                                     .add(R.id.fragment_container, welcomeFrag)
                                     .commit();
                         }
+
                         @Override
                         public void failure(RetrofitError error) {
                         }
@@ -126,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+
     public void initPlaylistFragment() {
         Log.d("methodCall", "initPlaylistFragment");
         PlaylistFragment playlistFrag = PlaylistFragment.newInstance();
@@ -146,7 +167,9 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
                 ArrayList<PlaylistTrack> playlistTracks = new ArrayList<>(playlistTrackPager.items);
-                TracksFragment tracksFrag = TracksFragment.newInstance(playlistTracks);
+                final TracksFragment tracksFrag = TracksFragment.newInstance(playlistTracks, playlist.name, playlist.id);
+                Log.d("recyclerView", playlist.name);
+                //tracksFrag.setArguments(bundle);
                 getSupportFragmentManager()
                         .beginTransaction()
                         .setCustomAnimations(android.R.anim.slide_in_left,
@@ -156,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements
                         .replace(R.id.fragment_container, tracksFrag)
                         .addToBackStack(null)
                         .commit();
+
             }
 
             @Override
@@ -164,64 +188,102 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    public void swapifySong(final Track track) {}
 
-//    public void getArtistsFromPlaylist(String userId, final String playlistId) {
-//        spotify.getPlaylist(userId, playlistId, new Callback<Playlist>() {
-//            @Override
-//            public void success(Playlist playlist, Response response) {
-//
-//                List<PlaylistTrack> tracks = playlist.tracks.items;
-//                String artists = "";
-//                int count = 0;
-//                ArrayList<String> repeats = new ArrayList<>();
-//                for(PlaylistTrack track : tracks){
-//                    if(count < 3) {
-//                        if(!repeats.contains(track.track.artists.get(0).name)){
-//                            repeats.add(track.track.artists.get(0).name);
-//                            artists += track.track.artists.get(0).name + " , ";
-//                            count++;
-//                        }
-//                    }else{
-//                        break;
-//                    }
-//                }
-//                PlaylistToArtists.put(playlistId,artists);
-//            }
-//
-//            @Override
-//            public void failure(RetrofitError error) {
-//            }
-//        });
-//    }
+    public static void CreatePlaylist(String name, String description, final String playlistId) {
+        Map<String, Object> optionMap = new HashMap<>();
+        optionMap.put("name", name);
+        optionMap.put("public", true);
 
-//    public  static Track swapifySong(final Track original){
-//        String albumId = original.album.id;
-//        //check if album has another song available
-//        final ArrayList<Track> result = new ArrayList<>();
-//        spotify.getAlbumTracks(albumId, new Callback<Pager<Track>>() {
-//            @Override
-//            public void success(Pager<Track> trackPager, Response response) {
-//                List<Track> tracks = trackPager.items;
-//                for(Track track : tracks){
-//                    if(track.id != original.id){
-//                        result.add(track);                   }
-//                }
-//
-//            }
-//
-//            @Override
-//            public void failure(RetrofitError error) {
-//
-//            }
-//        });
-//        if(result.size() > 0){
-//            return result.get(0);
-//        }
-//        else{
-//            //find another song from the same artist
-//
-//        }
-//    }
+        if (swappedSongs.size() > 0) {
+            Log.d("recyclerView", "Has some songs");
+
+        } else {
+            Log.d("recyclerView", "Has no songs");
+
+        }
+        spotify.createPlaylist(userid, optionMap, new Callback<Playlist>() {
+            @Override
+            public void success(Playlist playlist, Response response) {
+                //add to playlist
+                Log.d("recyclerView", "Created Playlist");
+                Map<String,Object> queryParameters = new HashMap<>();
+                StringBuilder listOfSongUris = new StringBuilder();
+
+                int i = 0;
+                for(String key: swappedSongs.keySet()){
+                    if(i < swappedSongs.size() - 1 ){
+                        listOfSongUris.append(swappedSongs.get(key));
+                        listOfSongUris.append(",");
+                    }
+                    else{
+                        listOfSongUris.append(swappedSongs.get(key));
+                    }
+                    i++;
+                }
+                Log.d("recyclerView", listOfSongUris.toString());
+                queryParameters.put("uris",listOfSongUris.toString());
+                Map<String,Object> body = new HashMap<>();
+                spotify.addTracksToPlaylist(playlist.owner.id, playlist.id, queryParameters, body, new Callback<Pager<PlaylistTrack>>() {
+                    @Override
+                    public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
+                        Log.d("recyclerView","Add swaped songs worked");
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Log.d("recyclerView","Add swaped songs didnt work");
+                        Log.d("recyclerView",error.getMessage());
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.d("recyclerView", error.getMessage());
+                Log.d("recyclerView", userid);
+            }
+        });
+    }
+
+    public static void getSwappedTrackUris(final String originalPlaylistId, final String name,final  String description) {
+        if(swappedSongs.size() > 0){
+            swappedSongs.clear();
+        }
+        //CHANGE USERID TO ACCEPT THE PLAYLIST OWNER ID
+        spotify.getPlaylistTracks(userid, originalPlaylistId, new Callback<Pager<PlaylistTrack>>() {
+            @Override
+            public void success(final Pager<PlaylistTrack> playlistTrackPager, Response response) {
+                    final ArrayList<String> ids = new ArrayList<>();
+                    for(PlaylistTrack t :playlistTrackPager.items ) {
+                        ids.add(t.track.id);
+                        spotify.getArtistTopTrack(t.track.artists.get(0).id, "US", new Callback<Tracks>() {
+                            boolean addone =  false;
+                            @Override
+                            public void success(Tracks artistTopTracks, Response response) {
+                                for(Track temp: artistTopTracks.tracks){
+                                    if(!swappedSongs.containsKey(temp.id) && !ids.contains(temp.id) &&
+                                            swappedSongs.size() < playlistTrackPager.items.size() && !addone) {
+                                        swappedSongs.put(temp.id,temp.uri);
+                                        addone = true;
+                                    }
+                                }
+                            }
+                            @Override
+                            public void failure(RetrofitError error) {
+                                Log.d("recyclerView", "Add getArtistTopTrack didnt work");
+
+                            }
+                        });
+                    }
+                CreatePlaylist(name, description, originalPlaylistId);
+            }
+            @Override
+            public void failure(RetrofitError error) {
+                Log.d("recyclerView", "Add getSwappedTrackUris didnt work");
+            }
+        });
+    }
+
 }
-

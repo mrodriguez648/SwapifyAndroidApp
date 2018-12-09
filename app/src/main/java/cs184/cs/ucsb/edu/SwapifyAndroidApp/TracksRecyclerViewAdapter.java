@@ -11,7 +11,9 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import cs184.cs.ucsb.edu.SwapifyAndroidApp.TracksFragment.OnTracksFragmentInteractionListener;
+import org.w3c.dom.Text;
+
+import cs184.cs.ucsb.edu.SwapifyAndroidApp.TracksFragment.OnTrackFragmentInteractionListener;
 
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.Track;
@@ -71,6 +73,7 @@ public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecycl
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Ask to swap individual song
                 if (null != mListener) {
                     Log.d("onClickListener", "Track " + cTrack.name + " selected");
                 }

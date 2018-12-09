@@ -1,5 +1,6 @@
 package cs184.cs.ucsb.edu.SwapifyAndroidApp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -25,8 +28,13 @@ import kaaes.spotify.webapi.android.models.Track;
 public class TracksFragment extends Fragment {
 
     public static final String PLAYLIST_TAG = "PLAYLIST_TAG";
-    private OnTracksFragmentInteractionListener mListener;
+    OnTrackFragmentInteractionListener mListener;
     private ArrayList<PlaylistTrack> mTrackList;
+    TracksRecyclerViewAdapter adapt;
+    static String  playlistId;
+    static String playlistName;
+
+
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -36,8 +44,10 @@ public class TracksFragment extends Fragment {
     }
 
     @SuppressWarnings("unused")
-    public static TracksFragment newInstance(ArrayList<PlaylistTrack> tracks) {
+    public static TracksFragment newInstance(ArrayList<PlaylistTrack> tracks , String name , String id) {
         TracksFragment fragment = new TracksFragment();
+        playlistId  = id;
+        playlistName = name;
         Bundle data = new Bundle();
         data.putParcelableArrayList(PLAYLIST_TAG, tracks);
         fragment.setArguments(data);
@@ -47,6 +57,8 @@ public class TracksFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         if (getArguments() != null) {
             mTrackList = getArguments().getParcelableArrayList(PLAYLIST_TAG);
         }
@@ -56,16 +68,31 @@ public class TracksFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_track_list, container, false);
-
+        View rc = view.findViewById(R.id.track_list);
         // Set the adapter with a linear layout manager
-        if (view instanceof RecyclerView) {
+        if (rc instanceof RecyclerView) {
             Log.d("recyclerView", "RecyclerView instantiated");
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            RecyclerView recyclerView = (RecyclerView) rc;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new TracksRecyclerViewAdapter(mTrackList, mListener));
+            adapt = new TracksRecyclerViewAdapter(mTrackList,mListener);
+            recyclerView.setAdapter(adapt);
+
         }
+
+        Button swapPlaylistButton = view.findViewById(R.id.swap_button);
+        swapPlaylistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("recyclerView", "Swapped button");
+                MainActivity.getSwappedTrackUris(playlistId,playlistName + " Swapped ;) ","Created by Swapify");
+            }
+        });
         return view;
+    }
+
+    public void swapSongs(){
+
     }
 
 
@@ -97,7 +124,9 @@ public class TracksFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnTracksFragmentInteractionListener {
-        void swapifySong(final Track original);
+    public interface OnTrackFragmentInteractionListener {
     }
+
+
+
 }
