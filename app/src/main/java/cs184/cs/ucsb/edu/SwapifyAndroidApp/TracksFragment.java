@@ -28,10 +28,8 @@ public class TracksFragment extends Fragment {
     OnTracksFragmentInteractionListener mListener;
     private ArrayList<PlaylistTrack> mTrackList;
     TracksRecyclerViewAdapter adapt;
-    static String  playlistId;
-    static String playlistName;
-
-
+    private static String  playlistId;
+    private static String playlistName;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the

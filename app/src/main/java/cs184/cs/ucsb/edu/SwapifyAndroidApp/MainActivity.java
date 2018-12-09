@@ -48,12 +48,10 @@ public class MainActivity extends AppCompatActivity implements
     private static final String CLIENT_ID = "49561555a6fd4897912fddebb7bf7da8";
     private static final String REDIRECT_URI = "testspotify://callback";
     public static final int MAX_ALBUM_DIMENSIONS = 200;
-    TracksFragment tracksFragment;
     private SpotifyApi api;
     public static SpotifyService spotify;
     public static ArrayList<PlaylistSimple> userPlaylists;
     public static String userid;
-    public static StringBuilder builder = new StringBuilder();
     public static  HashMap<String,String> swappedSongs = new HashMap<>();
 
 
@@ -91,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements
                 case TOKEN:
                     // Handle successful response
                     Log.d("user", "success");
-                    final String accessToken = response.getAccessToken();
                     api.setAccessToken(response.getAccessToken());
                     spotify = api.getService();
                     // Populate our user playlist data
@@ -104,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements
                             WelcomeFragment welcomeFrag = WelcomeFragment.newInstance(userPrivate.display_name);
                             fragmentManager
                                     .beginTransaction()
-                                    .setCustomAnimations(android.R.anim.slide_in_left,
+                                    .setCustomAnimations(android.R.anim.slide_out_right,
                                             android.R.anim.slide_out_right,
                                             android.R.anim.slide_in_left,
                                             android.R.anim.slide_out_right)
@@ -192,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements
     public static void CreatePlaylist(String name, String description, final String playlistId) {
         Map<String, Object> optionMap = new HashMap<>();
         optionMap.put("name", name);
+        optionMap.put("description", description);
         optionMap.put("public", true);
 
         if (swappedSongs.size() > 0) {
@@ -256,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void success(final Pager<PlaylistTrack> playlistTrackPager, Response response) {
                     final ArrayList<String> ids = new ArrayList<>();
-                    for(PlaylistTrack t :playlistTrackPager.items ) {
+                    for(PlaylistTrack t : playlistTrackPager.items ) {
                         ids.add(t.track.id);
                         spotify.getArtistTopTrack(t.track.artists.get(0).id, "US", new Callback<Tracks>() {
                             boolean addone =  false;
