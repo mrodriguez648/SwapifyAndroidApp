@@ -43,10 +43,12 @@ public class PlaylistRecyclerViewAdapter extends RecyclerView.Adapter<PlaylistRe
     @Override
     public void onBindViewHolder(@NonNull final PlaylistViewHolder holder, int position) {
         holder.playlistItem = mPlaylists.get(position);
-        Picasso.get()
-                .load(holder.playlistItem.images.get(0).url)
-                .resize(MainActivity.MAX_ALBUM_DIMENSIONS, MainActivity.MAX_ALBUM_DIMENSIONS)
-                .into(holder.albumImgView);
+        if(holder.playlistItem.images.size() > 0) {
+            Picasso.get()
+                    .load(holder.playlistItem.images.get(0).url)
+                    .resize(MainActivity.MAX_ALBUM_DIMENSIONS, MainActivity.MAX_ALBUM_DIMENSIONS)
+                    .into(holder.albumImgView);
+        }
         holder.playlistTitleView.setText(holder.playlistItem.name);
         holder.playlistAuthorView.setText(holder.playlistItem.owner.display_name);
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -60,10 +62,13 @@ public class PlaylistRecyclerViewAdapter extends RecyclerView.Adapter<PlaylistRe
         });
     }
 
+
+
     @Override
     public int getItemCount() {
         return mPlaylists.size();
     }
+
 
     public class PlaylistViewHolder extends RecyclerView.ViewHolder {
         public View mView;

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/track_list"
-    android:name="cs184.cs.ucsb.edu.swapify.SongFragment"
+
+
+<FrameLayout android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-    tools:context=".TracksFragment"
-    tools:listitem="@layout/fragment_track_item" />
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/track_list"
+        android:name="cs184.cs.ucsb.edu.swapify.SongFragment"
+        android:layout_width="370dp"
+        android:layout_height="418dp"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        >
+    </android.support.v7.widget.RecyclerView>
+    <include layout = "@layout/buttonwrapper"/>
+</FrameLayout>
+
+
+
+
