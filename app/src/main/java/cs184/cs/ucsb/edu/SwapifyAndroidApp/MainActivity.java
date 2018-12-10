@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements
     public static ArrayList<PlaylistSimple> userPlaylists;
     public static String userid;
     public static  HashMap<String,String> swappedSongs = new HashMap<>();
+    public static boolean playlistSwapified;
 
     private static FragmentManager fragmentManager;
 
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements
         api = new SpotifyApi();
         fragmentManager = getSupportFragmentManager();
         userPlaylists = new ArrayList<>();
-
+        playlistSwapified = false;
         AuthenticationRequest.Builder builder =
                 new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
                 .setShowDialog(true)
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-
+    // interface OnPlaylistFragmentInteractionListener method
     public void initPlaylistFragment() {
         PlaylistFragment playlistFrag = PlaylistFragment.newInstance();
         getSupportFragmentManager()
@@ -171,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
     }
 
+    //interface OnTracklistFragmentInteraction Listener method
     public void initTrackFragment(final PlaylistSimple playlist) {
         Log.d("methodCall", "initTrackFragment");
         spotify.getPlaylistTracks(playlist.owner.id, playlist.id, new Callback<Pager<PlaylistTrack>>() {
@@ -239,10 +241,15 @@ public class MainActivity extends AppCompatActivity implements
                     @Override
                     public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
                         Log.d("CreatePlaylist","Add swaped songs worked");
+                        playlistSwapified = true;
                         PlaylistFragment playlistFragment =
                                 (PlaylistFragment) fragmentManager.findFragmentByTag(PLAYLIST_FRAG_TAG);
                         addNewlyCreatedPlaylist();
                         playlistFragment.adapter.notifyItemInserted(0);
+                        TracksFragment tracksFragment =
+                                (TracksFragment) fragmentManager.findFragmentByTag(TRACKS_FRAG_TAG);
+                        tracksFragment.displaySwapifyProgress(playlistSwapified);
+                        playlistSwapified = false;
                     }
 
                     @Override

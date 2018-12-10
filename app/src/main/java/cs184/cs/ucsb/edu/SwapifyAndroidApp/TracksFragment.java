@@ -1,8 +1,11 @@
 package cs184.cs.ucsb.edu.SwapifyAndroidApp;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +14,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -33,7 +40,9 @@ public class TracksFragment extends Fragment {
     public TracksRecyclerViewAdapter adapter;
     private static String  playlistId;
     private static String playlistName;
-
+    public ConstraintLayout mProgressbarLayout;
+    public ProgressBar mProgressbar;
+    public Dialog mOverlayDialog;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -80,6 +89,10 @@ public class TracksFragment extends Fragment {
             adapter = new TracksRecyclerViewAdapter(mTrackList, mListener);
             recyclerView.setAdapter(adapter);
         }
+
+        mOverlayDialog = new Dialog(getContext(), android.R.style.Theme_Panel); //display an invisible overlay dialog to prevent user interaction and pressing back
+        mProgressbarLayout = view.findViewById(R.id.progbar_layout);
+        mProgressbar = view.findViewById(R.id.progbar_swaping);
         Button swapPlaylistButton = view.findViewById(R.id.b_logout);
         swapPlaylistButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +100,7 @@ public class TracksFragment extends Fragment {
                 Log.d("recyclerView", "Swapped button");
                 Log.d("trackRecyclerView", "Total playlists before swap: " + Integer.toString(MainActivity.userPlaylists.size()));
 //                MainActivity.getSwappedTrackUrisFromAlbums(playlistId, mTrackList, playlistName + " Swapped ;) ","Created by Swapify");
+                displaySwapifyProgress(MainActivity.playlistSwapified);
                 MainActivity.getSwappedTrackUris(playlistId, playlistName + " Swapped ;)", "Created by Swapify");
             }
         });
@@ -113,6 +127,21 @@ public class TracksFragment extends Fragment {
         mTrackList = null;
     }
 
+    public void displaySwapifyProgress(boolean swapped) {
+        if (!swapped) {
+            mOverlayDialog.setCancelable(false);
+            mOverlayDialog.show();
+            mProgressbarLayout.setVisibility(View.VISIBLE);
+            mProgressbar.setVisibility(View.VISIBLE);
+            Toast.makeText(getContext(), "SWAPIFYING PLAYLIST. DO NOT EXIT.", Toast.LENGTH_LONG).show();
+        }
+        else {
+            mProgressbar.setVisibility(View.INVISIBLE);
+            mProgressbarLayout.setVisibility(View.INVISIBLE);
+            mOverlayDialog.dismiss();
+            Toast.makeText(getContext(),"Swapping Complete ;)", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -125,6 +154,5 @@ public class TracksFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnTracksFragmentInteractionListener {
-
     }
 }
