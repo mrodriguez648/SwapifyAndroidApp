@@ -80,7 +80,7 @@ public class TracksFragment extends Fragment {
             adapter = new TracksRecyclerViewAdapter(mTrackList, mListener);
             recyclerView.setAdapter(adapter);
         }
-        Button swapPlaylistButton = view.findViewById(R.id.b_swapify);
+        Button swapPlaylistButton = view.findViewById(R.id.b_logout);
         swapPlaylistButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

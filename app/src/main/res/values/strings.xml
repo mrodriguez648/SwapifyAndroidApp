@@ -2,6 +2,7 @@
     <string name="app_name">Swapify</string>
     <string name="welcome_txt">Welcome to Swapify</string>
     <string name="welcome_desc">Freshen up your playlists with the simple click of a button!</string>
+    <string name="welcome_logout">Logout</string>
     <string name="playlist_auth_BY">by</string>
     <string name="USERNAME">Username</string>
 </resources>

@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +30,7 @@ public class WelcomeFragment extends Fragment {
     private TextView mUsernameView;
     private TextView mWelcomeDescView;
     private Button mSwapify;
+    private Button mLogout;
     private String username;
     private int textViewAnimeTime;
     private OnWelcomeFragmentInteractionListener mListener;
@@ -57,17 +60,18 @@ public class WelcomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_welcome, container, false);
-
         mSpotifyIcon = (ImageView) rootView.findViewById(R.id.imgv_spotify);
         mWelcomeView = (TextView) rootView.findViewById(R.id.welcome_txt);
         mWelcomeDescView = (TextView) rootView.findViewById(R.id.welcome_desc);
         mUsernameView = (TextView) rootView.findViewById(R.id.username);
         mSwapify = (Button) rootView.findViewById(R.id.b_swapify);
+        mLogout = (Button) rootView.findViewById(R.id.b_logout);
         mSpotifyIcon.setVisibility(View.GONE);
         mWelcomeView.setVisibility(View.GONE);
         mWelcomeDescView.setVisibility(View.GONE);
         mUsernameView.setVisibility(View.GONE);
         mSwapify.setVisibility(View.GONE);
+        mLogout.setVisibility(View.GONE);
         mUsernameView.setText(username);
         textViewAnimeTime = getResources().getInteger(android.R.integer.config_longAnimTime);
         fadeViewIn(mSpotifyIcon);
@@ -75,6 +79,7 @@ public class WelcomeFragment extends Fragment {
         fadeViewIn(mUsernameView);
         fadeViewIn(mWelcomeDescView);
         fadeViewIn(mSwapify);
+        fadeViewIn(mLogout);
 
         mSwapify.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,11 +87,17 @@ public class WelcomeFragment extends Fragment {
                 mListener.initPlaylistFragment();
             }
         });
+        mLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.logout();
+            }
+        });
         return rootView;
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
         if (context instanceof OnWelcomeFragmentInteractionListener) {
             mListener = (OnWelcomeFragmentInteractionListener) context;
@@ -111,6 +122,17 @@ public class WelcomeFragment extends Fragment {
                 .setListener(null);
     }
 
+    public void setNewUsername(String username) {
+        mUsernameView.setAlpha(1f);
+        mUsernameView.animate()
+                .alpha(0f)
+                .setDuration(textViewAnimeTime)
+                .setListener(null);
+        mUsernameView.setVisibility(View.GONE);
+        mUsernameView.setText(username);
+        fadeViewIn(mUsernameView);
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -119,5 +141,6 @@ public class WelcomeFragment extends Fragment {
      */
     public interface OnWelcomeFragmentInteractionListener {
         void initPlaylistFragment();
+        void logout();
     }
 }

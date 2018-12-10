@@ -35,15 +35,18 @@ public class MainActivity extends AppCompatActivity implements
         WelcomeFragment.OnWelcomeFragmentInteractionListener,
         PlaylistFragment.OnPlaylistFragmentInteractionListener,
         TracksFragment.OnTracksFragmentInteractionListener {
-    private static final int REQUEST_CODE = 1337;
+    private final int REQUEST_CODE = 1337;
     private static final String CLIENT_ID = "49561555a6fd4897912fddebb7bf7da8";
     private static final String REDIRECT_URI = "testspotify://callback";
     private static final String WELC0ME_FRAG_TAG = "WELCOME_FRAG";
     private static final String PLAYLIST_FRAG_TAG = "PLAYLIST_FRAG_TAG";
     private static final String TRACKS_FRAG_TAG = "TRACKS_FRAG_TAG";
+    private final String[] scopes = new String[]{"streaming,playlist-modify-public," +
+            "playlist-read-private,playlist-read-collaborative"};
     public static final int MAX_ALBUM_DIMENSIONS = 200;
     private SpotifyApi api;
     public static SpotifyService spotify;
+    public AuthenticationRequest request;
     public static ArrayList<PlaylistSimple> userPlaylists;
     public static String userid;
     public static  HashMap<String,String> swappedSongs = new HashMap<>();
@@ -54,17 +57,16 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         api = new SpotifyApi();
         fragmentManager = getSupportFragmentManager();
         userPlaylists = new ArrayList<>();
 
         AuthenticationRequest.Builder builder =
-                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
+                .setShowDialog(true)
+                .setScopes(scopes);
 
-        builder.setScopes(new String[]{"streaming,playlist-modify-public," +
-                "playlist-read-private,playlist-read-collaborative"});
-        AuthenticationRequest request = builder.build();
+        request = builder.build();
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements
                 // Response was successful and contains auth token
                 case TOKEN:
                     // Handle successful response
-                    Log.d("user", "success");
+                    Log.d("userAuth", "success");
                     api.setAccessToken(response.getAccessToken());
                     spotify = api.getService();
                     // Populate our user playlist data
@@ -91,15 +93,20 @@ public class MainActivity extends AppCompatActivity implements
                         @Override
                         public void success(UserPrivate userPrivate, Response response) {
                             userid = userPrivate.id;
-                            WelcomeFragment welcomeFrag = WelcomeFragment.newInstance(userPrivate.display_name);
-                            fragmentManager
-                                    .beginTransaction()
-                                    .setCustomAnimations(0,
-                                            android.R.anim.slide_out_right,
-                                            android.R.anim.slide_in_left,
-                                            android.R.anim.slide_out_right)
-                                    .add(R.id.fragment_container, welcomeFrag, WELC0ME_FRAG_TAG)
-                                    .commit();
+                            WelcomeFragment welcomeFrag =
+                                    (WelcomeFragment) fragmentManager.findFragmentByTag(WELC0ME_FRAG_TAG);
+                            if (welcomeFrag != null) { welcomeFrag.setNewUsername(userPrivate.display_name); }
+                            else {
+                                welcomeFrag = WelcomeFragment.newInstance(userPrivate.display_name);
+                                fragmentManager
+                                        .beginTransaction()
+                                        .setCustomAnimations(0,
+                                                android.R.anim.slide_out_right,
+                                                android.R.anim.slide_in_left,
+                                                android.R.anim.slide_out_right)
+                                        .add(R.id.fragment_container, welcomeFrag, WELC0ME_FRAG_TAG)
+                                        .commit();
+                            }
                         }
 
                         @Override
@@ -110,13 +117,15 @@ public class MainActivity extends AppCompatActivity implements
                 // Auth flow returned an error
                 case ERROR:
                     // Handle error response
-                    Log.d("user", response.getError());
+                    Log.d("userAuth", response.getError());
+                    if(fragmentManager.findFragmentByTag(WELC0ME_FRAG_TAG) == null) { finish(); }
                     break;
 
                 // Most likely auth flow was cancelled
                 default:
                     // Handle other cases
-                    Log.d("user", "error");
+                    Log.d("userAuth", "default error");
+                    if(fragmentManager.findFragmentByTag(WELC0ME_FRAG_TAG) == null) { finish(); }
             }
         }
     }
@@ -179,7 +188,6 @@ public class MainActivity extends AppCompatActivity implements
                         .replace(R.id.fragment_container, tracksFrag, TRACKS_FRAG_TAG)
                         .addToBackStack(null)
                         .commit();
-
             }
 
             @Override
@@ -187,6 +195,11 @@ public class MainActivity extends AppCompatActivity implements
                 Log.d("initTrackFragment", error.toString());
             }
         });
+    }
+
+    // interface OnWelcomeFragmentInteractionListener method
+    public void logout() {
+        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
 
 
@@ -208,9 +221,8 @@ public class MainActivity extends AppCompatActivity implements
                 Log.d("CreatePlaylist", "Created Playlist");
                 Map<String,Object> queryParameters = new HashMap<>();
                 StringBuilder listOfSongUris = new StringBuilder();
-
                 int i = 0;
-                for(String key: swappedSongs.keySet()){
+                for (String key: swappedSongs.keySet()) {
                     if(i < swappedSongs.size() - 1 ){
                         listOfSongUris.append(swappedSongs.get(key));
                         listOfSongUris.append(",");
