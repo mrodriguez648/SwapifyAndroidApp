@@ -2,6 +2,7 @@ package cs184.cs.ucsb.edu.SwapifyAndroidApp;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,13 +23,13 @@ import kaaes.spotify.webapi.android.models.PlaylistSimple;
 public class PlaylistFragment extends Fragment {
 
     private OnPlaylistFragmentInteractionListener mListener;
+    public PlaylistRecyclerViewAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public PlaylistFragment() {
-    }
+    public PlaylistFragment() {}
 
     @SuppressWarnings("unused")
     public static PlaylistFragment newInstance() {
@@ -41,12 +42,10 @@ public class PlaylistFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_playlist_list, container, false);
 
-
-        // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
@@ -55,7 +54,8 @@ public class PlaylistFragment extends Fragment {
             DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                     layoutManager.getOrientation());    
             recyclerView.addItemDecoration(dividerItemDecoration);
-            recyclerView.setAdapter(new PlaylistRecyclerViewAdapter(MainActivity.userPlaylists, mListener));
+            adapter = new PlaylistRecyclerViewAdapter(MainActivity.userPlaylists, mListener);
+            recyclerView.setAdapter(adapter);
         }
         return view;
     }
@@ -73,7 +73,6 @@ public class PlaylistFragment extends Fragment {
                     + " must implement OnPlaylistFragmentInteractionListener");
         }
     }
-
 
     @Override
     public void onDetach() {

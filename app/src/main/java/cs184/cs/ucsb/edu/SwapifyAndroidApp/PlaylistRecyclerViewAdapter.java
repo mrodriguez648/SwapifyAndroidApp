@@ -64,8 +64,6 @@ public class PlaylistRecyclerViewAdapter extends RecyclerView.Adapter<PlaylistRe
         });
     }
 
-
-
     @Override
     public int getItemCount() {
         return mPlaylists.size();
