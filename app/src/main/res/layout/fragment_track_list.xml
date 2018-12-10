@@ -20,7 +20,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:context=".TracksFragment"
-        tools:listitem="@layout/fragment_track_item"></android.support.v7.widget.RecyclerView>
+        tools:listitem="@layout/fragment_track_item">
+    </android.support.v7.widget.RecyclerView>
 
     <Button
         android:id="@+id/b_swapify"

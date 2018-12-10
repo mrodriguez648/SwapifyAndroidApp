@@ -35,7 +35,6 @@ public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecycl
     @NonNull
     @Override
     public TrackViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d("methodCall", "onCreateViewHolder called, viewType: " + Integer.toString(viewType));
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_track_item, parent, false);
         view.findViewById(R.id.track_title).setSelected(true);

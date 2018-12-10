@@ -86,7 +86,8 @@ public class TracksFragment extends Fragment {
             public void onClick(View v) {
                 Log.d("recyclerView", "Swapped button");
                 Log.d("trackRecyclerView", "Total playlists before swap: " + Integer.toString(MainActivity.userPlaylists.size()));
-                MainActivity.getSwappedTrackUris(playlistId,playlistName + " Swapped ;) ","Created by Swapify");
+//                MainActivity.getSwappedTrackUrisFromAlbums(playlistId, mTrackList, playlistName + " Swapped ;) ","Created by Swapify");
+                MainActivity.getSwappedTrackUris(playlistId, playlistName + " Swapped ;)", "Created by Swapify");
             }
         });
         return view;
@@ -111,6 +112,7 @@ public class TracksFragment extends Fragment {
         mListener = null;
         mTrackList = null;
     }
+
 
     /**
      * This interface must be implemented by activities that contain this
