@@ -13,16 +13,20 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Album;
 import kaaes.spotify.webapi.android.models.Pager;
 import kaaes.spotify.webapi.android.models.Playlist;
 import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
-import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
+import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.UserPrivate;
 
 import retrofit.Callback;
@@ -30,11 +34,11 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 
-
 public class MainActivity extends AppCompatActivity implements
         WelcomeFragment.OnWelcomeFragmentInteractionListener,
         PlaylistFragment.OnPlaylistFragmentInteractionListener,
         TracksFragment.OnTracksFragmentInteractionListener {
+    private static final String TAG = "MAIN_ACTIVITY";
     private final int REQUEST_CODE = 1337;
     private static final String CLIENT_ID = "49561555a6fd4897912fddebb7bf7da8";
     private static final String REDIRECT_URI = "testspotify://callback";
@@ -64,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements
         playlistSwapified = false;
         AuthenticationRequest.Builder builder =
                 new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
-                .setShowDialog(true)
-                .setScopes(scopes);
+                        .setShowDialog(true)
+                        .setScopes(scopes);
 
         request = builder.build();
 
@@ -84,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements
                 // Response was successful and contains auth token
                 case TOKEN:
                     // Handle successful response
-                    Log.d("userAuth", "success");
+                    Log.d(TAG, " user auth success");
                     api.setAccessToken(response.getAccessToken());
                     spotify = api.getService();
                     // Populate our user playlist data
@@ -118,14 +122,14 @@ public class MainActivity extends AppCompatActivity implements
                 // Auth flow returned an error
                 case ERROR:
                     // Handle error response
-                    Log.d("userAuth", response.getError());
+                    Log.d(TAG, "user auth: " + response.getError());
                     if(fragmentManager.findFragmentByTag(WELC0ME_FRAG_TAG) == null) { finish(); }
                     break;
 
                 // Most likely auth flow was cancelled
                 default:
                     // Handle other cases
-                    Log.d("userAuth", "default error");
+                    Log.d(TAG, "user auth default error");
                     if(fragmentManager.findFragmentByTag(WELC0ME_FRAG_TAG) == null) { finish(); }
             }
         }
@@ -139,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements
             }
             @Override
             public void failure(RetrofitError error) {
-                Log.d("getPlaylists", error.toString());
+                Log.d(TAG, "get playlist: " + error.toString());
             }
         });
     }
@@ -153,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void failure(RetrofitError error) {
-                Log.d("addNewlyCreatedPlaylist", error.toString());
+                Log.d(TAG, "add new playlist: " + error.toString());
             }
         });
     }
@@ -205,26 +209,23 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    public static void CreatePlaylist(String name, String description) {
+    public static void createPlaylist(String name, String description) {
         Map<String, Object> optionMap = new HashMap<>();
         optionMap.put("name", name);
         optionMap.put("description", description);
         optionMap.put("public", true);
-        if (swappedSongs.size() > 0) {
-            Log.d("CreatePlaylist", "Has some songs");
-
-        } else {
-            Log.d("CreatePlaylist", "Has no songs");
+        if (swappedSongs.isEmpty()) {
+            Log.d("createPlaylist", "no new song data");
         }
         spotify.createPlaylist(userid, optionMap, new Callback<Playlist>() {
             @Override
             public void success(final Playlist playlist, Response response) {
                 //add to playlist
-                Log.d("CreatePlaylist", "Created Playlist");
+                Log.d("createPlaylist", "Created Playlist");
                 Map<String,Object> queryParameters = new HashMap<>();
                 StringBuilder listOfSongUris = new StringBuilder();
                 int i = 0;
-                for (String key: swappedSongs.keySet()) {
+                for (String key : swappedSongs.keySet()) {
                     if(i < swappedSongs.size() - 1 ){
                         listOfSongUris.append(swappedSongs.get(key));
                         listOfSongUris.append(",");
@@ -234,13 +235,13 @@ public class MainActivity extends AppCompatActivity implements
                     }
                     i++;
                 }
-                Log.d("CreatePlaylist", listOfSongUris.toString());
+                Log.d("createPlaylist", listOfSongUris.toString());
                 queryParameters.put("uris",listOfSongUris.toString());
                 Map<String,Object> body = new HashMap<>();
                 spotify.addTracksToPlaylist(playlist.owner.id, playlist.id, queryParameters, body, new Callback<Pager<PlaylistTrack>>() {
                     @Override
                     public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
-                        Log.d("CreatePlaylist","Add swaped songs worked");
+                        Log.d("createPlaylist","Swapped songs successfully added to playlist");
                         playlistSwapified = true;
                         PlaylistFragment playlistFragment =
                                 (PlaylistFragment) fragmentManager.findFragmentByTag(PLAYLIST_FRAG_TAG);
@@ -254,25 +255,70 @@ public class MainActivity extends AppCompatActivity implements
 
                     @Override
                     public void failure(RetrofitError error) {
-                        Log.d("CreatePlaylist","Add swaped songs didnt work");
-                        Log.d("CreatePlaylist",error.getMessage());
+                        Log.d("createPlaylist","Swapped songs unabled to be added to playlist");
+                        Log.d("createPlaylist",error.getMessage());
+                        TracksFragment tracksFragment =
+                                (TracksFragment) fragmentManager.findFragmentByTag(TRACKS_FRAG_TAG);
+                        tracksFragment.displaySwapifyProgress(!playlistSwapified);
                     }
                 });
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Log.d("CreatePlaylist", error.getMessage());
-                Log.d("CreatePlaylist", userid);
+                Log.d("createPlaylist", error.getMessage());
+                Log.d("createPlaylist", userid);
             }
         });
+    }
+
+    public static void createPlaylistTest(HashMap<String, String> newSongData, String pName, String pDesc) {
+        Map<String, Object> optionMap = new HashMap<>();
+        optionMap.put("name", pName);
+        optionMap.put("description", pDesc);
+        optionMap.put("public", true);
+        if (newSongData.isEmpty()) { Log.d("createPlaylist", "no new song data"); }
+        CompletableFuture.supplyAsync(() -> spotify.createPlaylist(userid, optionMap))
+                .thenCompose(newPlaylist -> {
+                    Log.d("createPlaylist", "Created Playlist");
+                    Map<String, Object> queryParameters = new HashMap<>();
+                    StringBuilder listOfSongUris = new StringBuilder();
+                    Iterator<String> newSongDataKeySetItr = newSongData.keySet().iterator();
+                    listOfSongUris.append(newSongData.get(newSongDataKeySetItr.next()));
+                    while (newSongDataKeySetItr.hasNext()) {
+                        listOfSongUris.append(",");
+                        listOfSongUris.append(newSongData.get(newSongDataKeySetItr.next()));
+                    }
+                    Log.d("createPlaylist", "MYSongUris: " + listOfSongUris.toString());
+                    queryParameters.put("uris", listOfSongUris.toString());
+                    return CompletableFuture.supplyAsync(() -> {
+                        Map<String,Object> body = new HashMap<>();
+                        return spotify.addTracksToPlaylist(
+                                newPlaylist.owner.id,
+                                newPlaylist.id,
+                                queryParameters,
+                                body
+                        );
+                    });
+                })
+                .thenRun(() -> {
+                    Log.d("createPlaylist","Add swapped songs worked");
+                    playlistSwapified = true;
+                    PlaylistFragment playlistFragment =
+                            (PlaylistFragment) fragmentManager.findFragmentByTag(PLAYLIST_FRAG_TAG);
+                    addNewlyCreatedPlaylist();
+                    playlistFragment.adapter.notifyItemInserted(0);
+                    TracksFragment tracksFragment =
+                            (TracksFragment) fragmentManager.findFragmentByTag(TRACKS_FRAG_TAG);
+                    tracksFragment.displaySwapifyProgress(playlistSwapified);
+                    playlistSwapified = false;
+                });
     }
 
     public static void getSwappedTrackUris(final String originalPlaylistId, final String name,final  String description) {
         if(swappedSongs.size() > 0){
             swappedSongs.clear();
         }
-
         //CHANGE USERID TO ACCEPT THE PLAYLIST OWNER ID
         spotify.getPlaylistTracks(userid, originalPlaylistId, new Callback<Pager<PlaylistTrack>>() {
             @Override
@@ -298,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements
                         }
                     });
                 }
-                CreatePlaylist(name, description);
+                createPlaylist(name, description);
             }
             @Override
             public void failure(RetrofitError error) {
@@ -306,6 +352,38 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
     }
+
+//    // TEST HELPER FUNCTIONS FOR NEW SWAPPING ALG
+//    public static HashMap<String, String> generateNewAlbumTracks(ArrayList<PlaylistTrack> oldtracks) {
+//        HashMap<String, String> swappedSongsData = new HashMap<>();
+//        ArrayList<String> oldTrackIDs = new ArrayList<>();
+//        Random random = new Random();
+//        for (PlaylistTrack track : oldtracks) {
+//            oldTrackIDs.add(track.track.id);
+//        }
+//        ArrayList<CompletableFuture<Void>> completableFuturesTracks = new ArrayList<>();
+//        for (PlaylistTrack track : oldtracks) {
+//            completableFuturesTracks.add(CompletableFuture.supplyAsync(() -> spotify.getArtistAlbums(track.track.artists.get(0).id))
+//                    .thenCompose(albumPager -> {
+//                        Album newTrackAlbum = albumPager.items.get(random.nextInt(albumPager.items.size()));
+//                        return CompletableFuture.supplyAsync(() -> spotify.getAlbumTracks(newTrackAlbum.id));
+//                    })
+//                    .thenAccept(trackPager -> {
+//                        boolean trackAdded = false;
+//                            while (!trackAdded) {
+//                            Track potentialNewTrack = trackPager.items.get(random.nextInt(trackPager.items.size()));
+//                            if (!oldTrackIDs.contains(potentialNewTrack.id) || (trackPager.items.size() == 1)) {
+//                                swappedSongsData.put(potentialNewTrack.id, potentialNewTrack.uri);
+//                                trackAdded = true;
+//                                Log.d("SWAPPING", "track added");
+//                            }
+//                        }
+//                    }));
+//        }
+//        completableFuturesTracks.forEach(CompletableFuture::join);
+//        Log.d("newAlbumTracks", "Newly generated tracks: " + swappedSongsData.toString());
+//        return swappedSongsData;
+//    }
 
     /*
     getSwappedTrackUrisFromAlbums
@@ -315,49 +393,107 @@ public class MainActivity extends AppCompatActivity implements
         Choose album from random -> Get all tracks from that album ->
         Choose track from that album that doesn't exist in original playlist ->
         Add that track to our swappedSongs data structure
-
-    public static void getSwappedTrackUrisFromAlbums(String playlistid, ArrayList<PlaylistTrack> oldtracks, final String newname, final String newdesc) {
-        if(swappedSongs.size() > 0) {
-            swappedSongs.clear();
-        }
-        final ArrayList<String> oldTrackIDs = new ArrayList<>();
-        final Random random = new Random();
+        */
+    public static void getSwappedTrackUrisFromAlbums(ArrayList<PlaylistTrack> oldtracks, String newname, String newdesc) {
+        if(swappedSongs.size() > 0) { swappedSongs.clear(); }
+        HashMap<String, String> newSongData = new HashMap<>();
+        ArrayList<String> oldTrackIDs = new ArrayList<>();
+        Random random = new Random();
         for (PlaylistTrack track : oldtracks) {
             oldTrackIDs.add(track.track.id);
         }
-        spotify.getPlaylistTracks(userid, playlistid, new Callback<Pager<PlaylistTrack>>() {
-            @Override
-            public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
-                for (PlaylistTrack track : playlistTrackPager.items) {
-                    spotify.getArtistAlbums(track.track.artists.get(0).id, new Callback<Pager<Album>>() {
+        ArrayList<CompletableFuture<Void>> completableFuturesTracks = new ArrayList<>();
+        for (PlaylistTrack track : oldtracks) {
+            completableFuturesTracks.add(CompletableFuture.supplyAsync(() -> spotify.getArtistAlbums(track.track.artists.get(0).id))
+                    .thenCompose(albumPager -> {
+                        Album newTrackAlbum = albumPager.items.get(random.nextInt(albumPager.items.size()));
+                        return CompletableFuture.supplyAsync(() -> spotify.getAlbumTracks(newTrackAlbum.id));
+                    })
+                    .thenAccept(trackPager -> {
                         boolean trackAdded = false;
-                        @Override
-                        public void success(Pager<Album> albumPager, Response response) {
-                            Album newTrackAlbum = albumPager.items.get(random.nextInt(albumPager.items.size()));
-                            spotify.getAlbumTracks(newTrackAlbum.id, new Callback<Pager<Track>>() {
-                                @Override
-                                public void success(Pager<Track> trackPager, Response response) {
-                                    while (!trackAdded) {
-                                        Log.d("SWAPPING", "track adding");
-                                        Track potentialNewTrack = trackPager.items.get(random.nextInt(trackPager.items.size()));
-                                        if (!oldTrackIDs.contains(potentialNewTrack.id) || (trackPager.items.size() == 1)) {
-                                            swappedSongs.put(potentialNewTrack.id, potentialNewTrack.uri);
-                                            trackAdded = true;
-                                        }
-                                    }
-                                }
-                                @Override
-                                public void failure(RetrofitError error) {Log.d("retrofit", error.toString()); }
-                            });
+                        while (!trackAdded) {
+                            Track potentialNewTrack = trackPager.items.get(random.nextInt(trackPager.items.size()));
+                            if ((!oldTrackIDs.contains(potentialNewTrack.id) && !newSongData.containsKey(potentialNewTrack.id)) || (trackPager.items.size() == 1)) {
+                                newSongData.put(potentialNewTrack.id, potentialNewTrack.uri);
+                                trackAdded = true;
+                                Log.d("SWAPPING", "track added");
+                            }
                         }
-                        @Override
-                        public void failure(RetrofitError error) { Log.d("retrofit", error.toString()); }
-                    });
-                }
-            }
-            @Override
-            public void failure(RetrofitError error) {}
-        });
+                    })
+            );
+        }
+
+        completableFuturesTracks.forEach(CompletableFuture::join);
+        Log.d("newAlbumTracks", "Newly generated tracks: " + newSongData.toString());
+        createPlaylistTest(newSongData, newname, newdesc);
+//        CompletableFuture.runAsync(() -> {
+//            for (PlaylistTrack track : oldtracks) {
+//                Log.d("asyncTask", "asyncTask started for: " + track.track.name);
+//                CompletableFuture.supplyAsync(() -> spotify.getArtistAlbums(track.track.artists.get(0).id))
+//                        .thenCompose(albumPager -> {
+//                            Album newTrackAlbum = albumPager.items.get(random.nextInt(albumPager.items.size()));
+//                            Log.d("asyncTask", "Track: " + track.track.name + " Album: " + newTrackAlbum.name );
+//                            return CompletableFuture.supplyAsync(() -> spotify.getAlbumTracks(newTrackAlbum.id));
+//                        })
+//                        .thenAccept(trackPager -> {
+//                            boolean trackAdded = false;
+//                            while (!trackAdded) {
+//                                Track potentialNewTrack = trackPager.items.get(random.nextInt(trackPager.items.size()));
+//                                Log.d("asyncTask", "Potential new track: " + potentialNewTrack.name);
+//                                if (!oldTrackIDs.contains(potentialNewTrack.id) || (trackPager.items.size() == 1)) {
+//                                    newSongData.put(potentialNewTrack.id, potentialNewTrack.uri);
+//                                    trackAdded = true;
+//                                    Log.d("asyncTask", "TRACK ADDED");
+//                                }
+//                            }
+//                        });
+//            }
+//        }).thenRun(() ->  {
+//            Log.d("newSongData info", newSongData.toString());
+//            swappedSongs.putAll(newSongData);
+//            createPlaylist(newname, newdesc);
+//        });
     }
-    */
+
+//    public static void getSwappedTrackUrisFromAlbumsTEST(String playlistid, ArrayList<PlaylistTrack> oldtracks, final String newname, final String newdesc) {
+//        HashMap<String, String> swappedTracks;
+//
+//        ArrayList<String> oldTrackIDs = new ArrayList<>();
+//        final Random random = new Random();
+//        for (PlaylistTrack track : oldtracks) {
+//            oldTrackIDs.add(track.track.id);
+//        }
+//        for (PlaylistTrack track : oldtracks) {
+//                    spotify.getArtistAlbums(track.track.artists.get(0).id, new Callback<Pager<Album>>() {
+//                        boolean trackAdded = false;
+//
+//                        @Override
+//                        public void success(Pager<Album> albumPager, Response response) {
+//                            Album newTrackAlbum = albumPager.items.get(random.nextInt(albumPager.items.size()));
+//                            spotify.getAlbumTracks(newTrackAlbum.id, new Callback<Pager<Track>>() {
+//                                @Override
+//                                public void success(Pager<Track> trackPager, Response response) {
+//                                    while (!trackAdded) {
+//                                        Log.d("SWAPPING", "track adding");
+//                                        Track potentialNewTrack = trackPager.items.get(random.nextInt(trackPager.items.size()));
+//                                        if (!oldTrackIDs.contains(potentialNewTrack.id) || (trackPager.items.size() == 1)) {
+//                                            swappedSongs.put(potentialNewTrack.id, potentialNewTrack.uri);
+//                                            trackAdded = true;
+//                                        }
+//                                    }
+//                                }
+//                                @Override
+//                                public void failure(RetrofitError error) {
+//                                    Log.d("retrofit", error.toString());
+//                                }
+//                            });
+//                        }
+//
+//                        @Override
+//                        public void failure(RetrofitError error) {
+//                            Log.d("retrofit", error.toString());
+//                        }
+//                    });
+//        }
+//    }
 }
